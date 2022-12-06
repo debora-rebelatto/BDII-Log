@@ -1,27 +1,26 @@
-const fs = require('fs');
+const fs = require('fs/promises');
+
 const util = require('util');
 const express = require('express');
+const Sequelize = require('sequelize');
+const metadado = require('./logFiles/metadado.json');
+
+const sequelize = new Sequelize('postgres://postgres@localhost:5432/crud', {dialect: 'postgres'});
 
 const app = express();
-const port = 3000;
-
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-})
+const port = 4000;
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
-// create function to read file
-
-const readFile = util.promisify(fs.readFile);
-
-// create function to write file
-const writeFile = util.promisify(fs.writeFile);
-
-// create function to initialize app
-const init = async () => {
-  const notes = JSON.parse(await readFile('db/db.json', 'utf8'));
-  console.log(notes);
+async function example() {
+  try {
+    const data = await fs.readFile('./src/logFiles/entradaLog', { encoding: 'utf8' });
+    console.log(data);
+  } catch (err) {
+    console.log(err);
+  }
 }
+
+example();

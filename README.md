@@ -107,8 +107,6 @@ e rode o seguinte comando no terminal:
 nodemon
 ```
 
-
-
 <!-- 
 start
 commit
