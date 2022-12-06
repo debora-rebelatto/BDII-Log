@@ -83,6 +83,32 @@ Funções a serem implementadas:
 4- Checar quais valores estão salvos nas tabelas (com o select) e atualizar valores inconsistentes (update);
 5- Reportar quais dados foram atualizados;
 6- Seguir o fluxo de execução conforme o método de REDO, conforme visto em aula;
+
+## :floppy_disk: Instalação
+```
+git clone https://github.com/debora-rebelatto/BDII-Log
+cd BDII-Log
+npm i
+```
+
+## :electric_plug: Conectando ao Banco de Dados
+
+
+## :cd: Inicializando
+```
+node src/index.js
+```
+ou, para atualização constante, instale o nodemon
+```
+npm i -g nodemon
+```
+e rode o seguinte comando no terminal:
+```
+nodemon
+```
+
+
+
 <!-- 
 start
 commit
