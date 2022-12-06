@@ -107,6 +107,9 @@ e rode o seguinte comando no terminal:
 nodemon
 ```
 
+## Desenvolvimento
+https://node-postgres.com/
+
 <!-- 
 start
 commit
