@@ -1,5 +1,4 @@
-# :notebook: Trabalho Prático - Log
-## Banco de Dados 2
+# :notebook: BD II - Trabalho Prático de Log
 
 ### [:paperclip: Descrição da tarefa](https://docs.google.com/document/d/12ExZiKP9j_zXwnjbZfGA74m5fSXff2ErAOLCdfs0ye0/edit)
 
@@ -92,7 +91,7 @@ npm i
 ```
 
 ## :electric_plug: Conectando ao Banco de Dados
-
+O Node-Postgres é um cliente PostgreSQL para Node.js. Ele é escrito em JavaScript e pode ser usado com o Node.js ou com o navegador. Para mais informações, acesse [aqui](https://node-postgres.com/).
 
 ## :cd: Inicializando
 ```
@@ -108,9 +107,10 @@ nodemon
 ```
 
 ## Desenvolvimento
-https://node-postgres.com/
+Durante o desenvolvimento foi utilizado o banco de dados PostgreSQL, que pode ser baixado [aqui](https://www.postgresql.org/download/).
+Para fazer as alterações, foi utilizado o NodePostgres, que pode ser encontrado [aqui](https://node-postgres.com/).
 
-<!-- 
+<!--
 start
 commit
 CKPT
