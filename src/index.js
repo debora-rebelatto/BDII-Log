@@ -6,10 +6,11 @@ const client = require('./db');
 const app = express();
 const port = 4000;
 
-require('dotenv').config()
+require('dotenv').config() // pega o arquivo oculto .env
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// cria uma rota para a aplicação que retorna o json com os dados
 app.get('/', async (req, res) => {
   try {
     const res = await getMetadata();
@@ -20,11 +21,12 @@ app.get('/', async (req, res) => {
   }
 });
 
+// inicia o server node
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
-
+// faz um select na tabela de metadado e retorna o resultado
 async function getMetadata() {
   const selectquery = 'SELECT * FROM metadado';
 
@@ -37,15 +39,19 @@ async function getMetadata() {
 
 async function readLog() {
   try {
-    // split log file by line
+    // load entradaLog file
     const data = await fs.readFile('./src/logFiles/entradaLog', { encoding: 'utf8' });
 
+    // faz split do arquivo em linhas
     const lines = data.split('\r');
 
+    // conecta no banco de dados
     await client.connect();
 
+    // cria a tabela de metadado
     await createMetadadoTable();
 
+    // insere os dados iniciais
     await insertInitialData();
 
     console.log("Inserido dados iniciais")
@@ -54,23 +60,20 @@ async function readLog() {
 
     console.log("Inicia leitura de log")
 
-    // console.log(lines);
-
+    // percorre as linhas do arquivo
     lines.forEach(line => {
-
-      // do nothing if line is empty
+      // verifica se a linha é valida
       if(line === "") {
         return;
       }
 
-      console.log("Line: ", line);
-
+      // verifica se a linha é um comando
       if(line.includes("start") || line.includes("commit") || line.includes("rollback")) {
         console.log("Command: ", line);
         checkCommand(line);
-      } else if(line.includes("cpkt")) {
+      } else if(line.includes("cpkt")) { // verifica se a linha é um checkpoint
         console.log("Checkpoint: ");
-      } else if(line.includes(",")) {
+      } else if(line.includes(",")) { // verifica se a linha é uma transação
         console.log("Transaction: ");
         createTransaction(line);
       }
@@ -83,7 +86,6 @@ async function readLog() {
       //   checkCommand(lineArray);
       // }
 
-
     });
   } catch (err) {
     console.log(err);
@@ -91,8 +93,10 @@ async function readLog() {
 }
 
 async function createMetadadoTable() {
+  // faz drop na tabela caso ela exista
   client.query('DROP TABLE IF EXISTS metadado');
 
+  // cria a tabela metadado
   client
     .query('CREATE TABLE IF NOT EXISTS metadado (id VARCHAR(255) PRIMARY KEY, A INTEGER, B INTEGER)')
     .then(res => console.log("CREATED TABLE metadado"))
@@ -101,9 +105,13 @@ async function createMetadadoTable() {
 
 async function insertInitialData() {
   try {
+    // verifica o tamanho do array de dados iniciais
     let size = metadado.INITIAL.id.length;
+
+    // cria a query de inserção
     const insertvalues = 'INSERT INTO metadado (id, A, B) VALUES ($1, $2, $3)';
 
+    // percorre o array de dados iniciais e insere no banco
     for(let i = 0; i < size; i++) {
       let values = [
         metadado.INITIAL.id[i],
@@ -111,6 +119,7 @@ async function insertInitialData() {
         metadado.INITIAL.B[i]
       ];
 
+      // insere os dados no banco
       await client.query(insertvalues, values)
     }
 
@@ -132,13 +141,7 @@ async function createTransaction(lineArray) {
 async function checkCommand(lineArray) {
   let command = lineArray[0];
 
-  if(command === "start") {
-    console.log("Start transaction");
-  } else if(command === "commit") {
-    console.log("Commit transaction");
-  } else if(command === "rollback") {
-    console.log("Rollback transaction");
-  }
 }
 
+// inicia a leitura do arquivo de log
 readLog();
