@@ -43,7 +43,10 @@ async function readLog() {
     const data = await fs.readFile('./src/logFiles/entradaLog', { encoding: 'utf8' });
 
     // faz split do arquivo em linhas
-    const lines = data.split('\r');
+    let lines = data.split('\r');
+
+    console.log("Inicia conexão com o banco de dados")
+
 
     // conecta no banco de dados
     await client.connect();
@@ -60,33 +63,33 @@ async function readLog() {
 
     console.log("Inicia leitura de log")
 
+    // revert o array de linhas
+    lines = lines.reverse();
+
     // percorre as linhas do arquivo
-    lines.forEach(line => {
+    lines.forEach((line, index) => {
       // verifica se a linha é valida
-      if(line === "") {
+      if(line === "" || line === "\r" || line === "\n") {
         return;
       }
 
       // transforma a linha em lowercase para comparar com os comandos
       let lowercaseLine = line.toLowerCase();
 
-      // verifica se a linha é um start
-      if(line.includes("start")) {
-        console.log("Start: ", line);
-      } else if(line.includes("cpkt")) { // verifica se a linha é um checkpoint
-        console.log("Checkpoint: ");
-      } else if(line.includes("commit")) {
-        console.log("Commit: ");
-      } else if(line.includes(",")) { // verifica se a linha é uma transação
-        console.log("Transaction: ");
-        createTransaction(line);
-      }
+      let ckpt = /ckpt/gi;
+      let commit = /commit/gi;
+      let start = /start/gi;
+      let crash = /crash/gi;
 
-      // if(lineArray > 2) {
-      //   createTransaction(lineArray);
-      // } else {
-      //   checkCommand(lineArray);
-      // }
+      if(ckpt.exec(lowercaseLine)) {
+        console.log("Linha tem ckpt", line);
+      } else if(commit.exec(lowercaseLine)) {
+        console.log("Linha tem commit", line);
+      } else if(start.exec(lowercaseLine)) {
+        console.log("Linha tem start", line);
+      } else if(crash.exec(lowercaseLine)) {
+        console.log("Linha tem crash", line);
+      }
 
     });
   } catch (err) {
