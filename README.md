@@ -29,12 +29,13 @@ Exemplo de tabela do banco de dados:
 </table>
 
 Arquivo de Metadado (json):
+
 ```json
 {
   "INITIAL": {
-    "id":[1,2],
-    "A": [20,20],
-    "B": [55,30]
+    "id": [1, 2],
+    "A": [20, 20],
+    "B": [55, 30]
   }
 }
 ```
@@ -64,10 +65,10 @@ Saída:
 Imprima as variáveis, exemplo:
 
 ```json
-{  
+{
   "INITIAL": {
-    "A": [500,20],
-    "B": [20,30]
+    "A": [500, 20],
+    "B": [20, 30]
   }
 }
 ```
@@ -75,6 +76,7 @@ Imprima as variáveis, exemplo:
 O checkpoint Redo permite que parte do log já processada seja descartada para evitar o reprocessamento.
 
 ## Detalhes
+
 Funções a serem implementadas:
 1- carregar o banco de dados com a tabela antes de executar o código do log (para zerar as configurações e dados parciais);
 2- Carregar o arquivo de log;
@@ -84,6 +86,7 @@ Funções a serem implementadas:
 6- Seguir o fluxo de execução conforme o método de REDO, conforme visto em aula;
 
 ## :floppy_disk: Instalação
+
 ```
 git clone https://github.com/debora-rebelatto/BDII-Log
 cd BDII-Log
@@ -91,24 +94,41 @@ npm i
 ```
 
 ## :electric_plug: Conectando ao Banco de Dados
+
 O Node-Postgres é um cliente PostgreSQL para Node.js. Ele é escrito em JavaScript e pode ser usado com o Node.js ou com o navegador. Para mais informações, acesse [aqui](https://node-postgres.com/).
 
 ## :cd: Inicializando
+
 ```
 node src/index.js
 ```
+
 ou, para atualização constante, instale o nodemon
+
 ```
 npm i -g nodemon
 ```
+
 e rode o seguinte comando no terminal:
+
 ```
 nodemon
 ```
 
+## :wrench: Configuração
+
+Crie o Banco de Dados no postgres.
+
+```
+CREATE DATABASE bdii_log;
+```
+
 ## Desenvolvimento
+
 Durante o desenvolvimento foi utilizado o banco de dados PostgreSQL, que pode ser baixado [aqui](https://www.postgresql.org/download/).
 Para fazer as alterações, foi utilizado o NodePostgres, que pode ser encontrado [aqui](https://node-postgres.com/).
+
+<!-- GET curl-->
 
 <!--
 start

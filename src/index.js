@@ -19,53 +19,83 @@ app.get('/', async (req, res) => {
   }
 });
 
-async function getMetadata() {
-  const selectquery = 'SELECT * FROM metadado';
-
-  return res.send(
-    await client
-      .query(selectquery)
-      .then(res => console.log(res.rows))
-      .catch(e => console.error(e.stack))
-  )
-}
-
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
+
+async function getMetadata() {
+  const selectquery = 'SELECT * FROM metadado';
+
+  return await client
+    .query(selectquery)
+    .then(res => console.log(res.rows))
+    .catch(e => console.error(e.stack))
+
+}
+
 async function readLog() {
   try {
+    // split log file by line
     const data = await fs.readFile('./src/logFiles/entradaLog', { encoding: 'utf8' });
 
     const lines = data.split('\r');
 
     await client.connect();
 
-    client.query('DROP TABLE IF EXISTS metadado');
+    await createMetadadoTable();
 
-    client
-      .query('CREATE TABLE IF NOT EXISTS metadado (id VARCHAR(255) PRIMARY KEY, A INTEGER, B INTEGER)')
-      .then(res => console.log("ok"))
-      .catch(e => console.error(e.stack))
+    await insertInitialData();
 
-    insertInitialData();
+    console.log("Inserido dados iniciais")
+
+    await getMetadata();
+
+    console.log("Inicia leitura de log")
+
+    // console.log(lines);
 
     lines.forEach(line => {
 
-      const lineArray = line.split(' ');
-
-      // if lineArray len bigger than 2 then it's a transaction
-      if(lineArray.length > 2) {
-        createTransaction(lineArray);
-      } else {
-        checkCommand(lineArray);
+      // do nothing if line is empty
+      if(line === "") {
+        return;
       }
-      console.log(lineArray);
+
+      console.log("Line: ", line);
+
+      if(line.includes("start") || line.includes("commit") || line.includes("rollback")) {
+        console.log("Command: ", line);
+        checkCommand(line);
+      } else if(line.includes("cpkt")) {
+        console.log("Checkpoint: ");
+      } else if(line.includes(",")) {
+        console.log("Transaction: ");
+        createTransaction(line);
+      }
+
+
+
+      // if(lineArray > 2) {
+      //   createTransaction(lineArray);
+      // } else {
+      //   checkCommand(lineArray);
+      // }
+
+
     });
   } catch (err) {
     console.log(err);
   }
+}
+
+async function createMetadadoTable() {
+  client.query('DROP TABLE IF EXISTS metadado');
+
+  client
+    .query('CREATE TABLE IF NOT EXISTS metadado (id VARCHAR(255) PRIMARY KEY, A INTEGER, B INTEGER)')
+    .then(res => console.log("CREATED TABLE metadado"))
+    .catch(e => console.error(e.stack))
 }
 
 async function insertInitialData() {
@@ -89,29 +119,25 @@ async function insertInitialData() {
 }
 
 async function createTransaction(lineArray) {
-  let idTupla = lineArray[0];
+  let transaction = lineArray[0];
   let id = lineArray[1];
   let column = lineArray[2];
   let oldValue = lineArray[3];
   let newValue = lineArray[4];
 
-  // create a transaction
-  if (lineArray[0] === 'UPDATE') {
-    const updatequery = 'UPDATE metadado SET A = $1, B = $2 WHERE id = $3';
-
-    values = [
-      lineArray[1],
-      lineArray[2],
-      lineArray[3]
-    ];
-
-    client.query(updatequery, values)
-      .then(res => console.log(res.rows))
-      .catch(e => console.error(e.stack))
-  }
+  // console.log(transaction, id, column, oldValue, newValue);
 }
 
 async function checkCommand(lineArray) {
+  let command = lineArray[0];
+
+  if(command === "start") {
+    console.log("Start transaction");
+  } else if(command === "commit") {
+    console.log("Commit transaction");
+  } else if(command === "rollback") {
+    console.log("Rollback transaction");
+  }
 }
 
 readLog();
