@@ -66,6 +66,8 @@ async function readLog() {
     // revert o array de linhas
     lines = lines.reverse();
 
+    let transactionArray = [];
+    let commitedTransactionArray = [];
     // percorre as linhas do arquivo
     lines.forEach((line, index) => {
       // verifica se a linha é valida
@@ -82,13 +84,43 @@ async function readLog() {
       let crash = /crash/gi;
 
       if(ckpt.exec(lowercaseLine)) {
-        console.log("Linha tem ckpt", line);
+        console.log("Inicia ckpt", line);
+        let lineArray = line.split(' ');
+        transactionArray = lineArray[1].match(/\(([^)]+)\)/)[1].split(',');
+
+        console.log("Transações que serão commitadas", transactionArray);
+
       } else if(commit.exec(lowercaseLine)) {
-        console.log("Linha tem commit", line);
+        console.log("Inicia commit", line);
+        let lineArray = line.split(' ');
+        let transactionId = lineArray[1];
+        transactionId = transactionId.substring(0, transactionId.length - 1);
+
+        console.log(transactionId)
+
+        // console.log("Transações que serão commitadas", transactionArray);
+
+        // put transaction in commitedTransactionArray
+        commitedTransactionArray.push(transactionId);
+
+        console.log("Transações commitadas", commitedTransactionArray);
+
+        // if transactionId is in transactionArray it has redo
+        if(transactionArray.includes(transactionId)) {
+          console.log("Transação tem redo", transactionId);
+        } else {
+          console.log("Transação não tem redo", transactionId);
+        }
+
       } else if(start.exec(lowercaseLine)) {
-        console.log("Linha tem start", line);
+        let lineArray = line.split(' ');
+        let transactionId = lineArray[1];
+        console.log("Inicia transação", line);
+
       } else if(crash.exec(lowercaseLine)) {
         console.log("Linha tem crash", line);
+      } else {
+        console.log("Linha tem transação", line);
       }
 
     });
@@ -131,21 +163,6 @@ async function insertInitialData() {
   } catch (err) {
     console.log(err);
   }
-}
-
-async function createTransaction(lineArray) {
-  let transaction = lineArray[0];
-  let id = lineArray[1];
-  let column = lineArray[2];
-  let oldValue = lineArray[3];
-  let newValue = lineArray[4];
-
-  // console.log(transaction, id, column, oldValue, newValue);
-}
-
-async function checkCommand(lineArray) {
-  let command = lineArray[0];
-
 }
 
 // inicia a leitura do arquivo de log
