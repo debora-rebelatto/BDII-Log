@@ -1,6 +1,6 @@
 const express = require('express');
 const fs = require('fs/promises');
-const metadado = require('./logFiles/metadado.json');
+const metadado = require('./logFiles/metadado.json'); // pega o arquivo de metadado
 const client = require('./db');
 
 const app = express();
