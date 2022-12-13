@@ -68,6 +68,8 @@ async function readLog() {
 
     let transactionArray = [];
     let commitedTransactionArray = [];
+    let redoTransactionArray = [];
+
     // percorre as linhas do arquivo
     lines.forEach((line, index) => {
       // verifica se a linha é valida
@@ -84,11 +86,20 @@ async function readLog() {
       let crash = /crash/gi;
 
       if(ckpt.exec(lowercaseLine)) {
-        console.log("Inicia ckpt", line);
         let lineArray = line.split(' ');
         transactionArray = lineArray[1].match(/\(([^)]+)\)/)[1].split(',');
 
         console.log("Transações que serão commitadas", transactionArray);
+
+        // check if transaction is in commitedTransactionArray
+        transactionArray.forEach((transactionId, index) => {
+          if(commitedTransactionArray.includes(transactionId)) {
+            console.log("Transação fez REDO", transactionId);
+            transactionArray.splice(index, 1);
+            // push to redoTransactionArray
+            redoTransactionArray.push(transactionId);
+          }
+        })
 
       } else if(commit.exec(lowercaseLine)) {
         console.log("Inicia commit", line);
@@ -124,6 +135,10 @@ async function readLog() {
       }
 
     });
+
+    console.log("Transações que serão commitadas", transactionArray);
+    console.log("Transações commitadas", commitedTransactionArray);
+    console.log("Transações que serão redo", redoTransactionArray);
   } catch (err) {
     console.log(err);
   }

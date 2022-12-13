@@ -78,14 +78,23 @@ O checkpoint Redo permite que parte do log já processada seja descartada para e
 ## Detalhes
 
 Funções a serem implementadas:
-```
-1- carregar o banco de dados com a tabela antes de executar o código do log (para zerar as configurações e dados parciais);
-2- Carregar o arquivo de log;
-3- Verifique quais transações devem realizar REDO. Imprimir o nome das transações que irão sofrer Redo. Observem a questão do checkpoint;
-4- Checar quais valores estão salvos nas tabelas (com o select) e atualizar valores inconsistentes (update);
-5- Reportar quais dados foram atualizados;
-6- Seguir o fluxo de execução conforme o método de REDO, conforme visto em aula;
-```
+
+<!-- checkbox -->
+
+- [x] Ler o arquivo de metadados (dados salvos) e os dados da tabela que irá operar no banco de dados;
+
+- [x] carregar o banco de dados com a tabela antes de executar o código do log (para zerar as configurações e dados parciais);
+
+- [x] Carregar o arquivo de log;
+
+- [x] Verifique quais transações devem realizar REDO. Imprimir o nome das transações que irão sofrer Redo. Observem a questão do checkpoint;
+
+- [x] Checar quais valores estão salvos nas tabelas (com o select) e atualizar valores inconsistentes (update);
+
+- [ ] Reportar quais dados foram atualizados;
+
+- [ ] Seguir o fluxo de execução conforme o método de REDO, conforme visto em aula;
+
 ## :floppy_disk: Instalação
 
 ```
