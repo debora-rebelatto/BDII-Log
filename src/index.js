@@ -67,18 +67,20 @@ async function readLog() {
         return;
       }
 
-      // verifica se a linha é um comando
-      if(line.includes("start") || line.includes("commit") || line.includes("rollback")) {
-        console.log("Command: ", line);
-        checkCommand(line);
+      // transforma a linha em lowercase para comparar com os comandos
+      let lowercaseLine = line.toLowerCase();
+
+      // verifica se a linha é um start
+      if(line.includes("start")) {
+        console.log("Start: ", line);
       } else if(line.includes("cpkt")) { // verifica se a linha é um checkpoint
         console.log("Checkpoint: ");
+      } else if(line.includes("commit")) {
+        console.log("Commit: ");
       } else if(line.includes(",")) { // verifica se a linha é uma transação
         console.log("Transaction: ");
         createTransaction(line);
       }
-
-
 
       // if(lineArray > 2) {
       //   createTransaction(lineArray);
