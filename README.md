@@ -99,6 +99,12 @@ O Node-Postgres é um cliente PostgreSQL para Node.js. Ele é escrito em JavaScr
 
 ## :cd: Inicializando
 
+Remova o ".example" do arquivo ".env.example" e preencha as informações de acordo com o seu banco de dados.
+
+```bash
+cp .env.example .env
+```
+
 ```
 node src/index.js
 ```
@@ -120,7 +126,7 @@ nodemon
 Crie o Banco de Dados no postgres.
 
 ```
-CREATE DATABASE bdii_log;
+CREATE DATABASE bdlog;
 ```
 
 ## Desenvolvimento
