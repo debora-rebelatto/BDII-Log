@@ -105,6 +105,8 @@ Remova o ".example" do arquivo ".env.example" e preencha as informações de aco
 cp .env.example .env
 ```
 
+## :computer: Executando
+
 ```
 node src/index.js
 ```
