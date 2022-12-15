@@ -43,10 +43,15 @@ async function readLog() {
     let lines = data.split("\r");
     lines = lines.reverse();
 
-    lines.forEach((line, index) => {
-      if(line === "" || line === "\r" || line === "\n") {
-        return;
-      }
+    console.log("Inicia conexão com o banco de dados");
+    await client.connect();
+
+    await createMetadadoTable();
+    await insertInitialData();
+    await getMetadata();
+
+    lines.forEach(async (line, index) => {
+      if (line === "" || line === "\r" || line === "\n") return;
 
       let lowercaseLine = line.toLowerCase();
 
@@ -56,25 +61,7 @@ async function readLog() {
       } else if (commit.exec(lowercaseLine)) {
         if (checkpointArray.length > 0) return;
 
-      if(ckpt.exec(lowercaseLine)) {
-        let lineArray = line.split(' ');
-        transactionArray = lineArray[1].match(/\(([^)]+)\)/)[1].split(',');
-
-        console.log("Transações que serão commitadas", transactionArray);
-
-        // check if transaction is in commitedTransactionArray
-        transactionArray.forEach((transactionId, index) => {
-          if(commitedTransactionArray.includes(transactionId)) {
-            console.log("Transação fez REDO", transactionId);
-            transactionArray.splice(index, 1);
-            // push to redoTransactionArray
-            redoTransactionArray.push(transactionId);
-          }
-        })
-
-      } else if(commit.exec(lowercaseLine)) {
-        console.log("Inicia commit", line);
-        let lineArray = line.split(' ');
+        let lineArray = line.split(" ");
         let transactionId = lineArray[1];
         transactionId = transactionId.substring(0, transactionId.length - 1);
 
@@ -82,9 +69,17 @@ async function readLog() {
       }
     });
 
-    console.log("Transações que serão commitadas", transactionArray);
+    checkpointArray.forEach((transactionId, index) => {
+      if (commitedTransactionArray.includes(transactionId)) {
+        redoTransactionArray.push(transactionId);
+      }
+    });
+
+    console.log("========= Finaliza leitura de log =========");
+    console.log("checkpointArray", checkpointArray);
     console.log("Transações commitadas", commitedTransactionArray);
     console.log("Transações que serão redo", redoTransactionArray);
+    console.log("===========================================");
   } catch (err) {
     console.log(err);
   }
