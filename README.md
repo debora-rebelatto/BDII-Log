@@ -103,18 +103,12 @@ cd BDII-Log
 npm i
 ```
 
+<!-- get curl to localhost:4000 -->
+curl -X GET http://localhost:4000/
+
 ## :electric_plug: Conectando ao Banco de Dados
 
 O Node-Postgres é um cliente PostgreSQL para Node.js. Ele é escrito em JavaScript e pode ser usado com o Node.js ou com o navegador. Para mais informações, acesse [aqui](https://node-postgres.com/).
-
-## :cd: Inicializando
-
-Remova o ".example" do arquivo ".env.example" e preencha as informações de acordo com o seu banco de dados.
-ou
-
-```bash
-cp .env.example .env
-```
 
 ## :computer: Executando
 
