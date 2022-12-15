@@ -30,8 +30,9 @@ async function readLog() {
     let start = /start/gi;
     let crash = /crash/gi;
 
-    let checkpointArray = [];
-    let commitedTransactionArray = [];
+    let checkpoint = [];
+    let commitedTransaction = [];
+    let started = [];
     let redoTransactionArray = [];
 
     const data = await fs.readFile("./src/logFiles/entradaLog", {
@@ -57,27 +58,36 @@ async function readLog() {
 
       if (ckpt.exec(lowercaseLine)) {
         let lineArray = line.split(" ");
-        checkpointArray = lineArray[1].match(/\(([^)]+)\)/)[1].split(",");
+        checkpoint = lineArray[1].match(/\(([^)]+)\)/)[1].split(",");
       } else if (commit.exec(lowercaseLine)) {
-        if (checkpointArray.length > 0) return;
+        if (checkpoint.length > 0) return;
 
         let lineArray = line.split(" ");
         let transactionId = lineArray[1];
         transactionId = transactionId.substring(0, transactionId.length - 1);
 
-        commitedTransactionArray.push(transactionId);
+        commitedTransaction.push(transactionId);
+      } else if (start.exec(lowercaseLine)) {
+        let lineArray = line.split(" ");
+        let transactionId = lineArray[1];
+        transactionId = transactionId.substring(0, transactionId.length - 1);
+
+        started.push(transactionId);
       }
     });
 
-    checkpointArray.forEach((transactionId, index) => {
-      if (commitedTransactionArray.includes(transactionId)) {
+    checkpoint.forEach((transactionId, index) => {
+      if (
+        commitedTransaction.includes(transactionId) &&
+        !started.includes(transactionId)
+      ) {
         redoTransactionArray.push(transactionId);
       }
     });
 
     console.log("========= Finaliza leitura de log =========");
-    console.log("checkpointArray", checkpointArray);
-    console.log("Transações commitadas", commitedTransactionArray);
+    console.log("checkpoint", checkpoint);
+    console.log("Transações commitadas", commitedTransaction);
     console.log("Transações que serão redo", redoTransactionArray);
     console.log("===========================================");
   } catch (err) {
