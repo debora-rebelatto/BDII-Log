@@ -73,13 +73,35 @@ async function readLog() {
         transactionId = transactionId.substring(0, transactionId.length - 1);
 
         started.push(transactionId);
+      } else {
+        let lineArray = line.split(",");
+        let transactionId = lineArray[0].substring(2, lineArray[0].length);
+        let id = lineArray[1];
+        let column = lineArray[2];
+        let oldValue = lineArray[3];
+        let newValue = lineArray[4]
+        // remove last character of newValue
+        if(lineArray[4] != undefined) {
+          newValue = newValue.substring(0, newValue.length - 1);
+        }
+
+        if (commitedTransaction.includes(transactionId)) {
+          const updatevalues =
+            "UPDATE metadado SET " +
+            column +
+            " = $1 WHERE id = $2";
+
+          let values = [newValue, id];
+
+          await client.query(updatevalues, values);
+        }
       }
     });
 
     checkpoint.forEach((transactionId, index) => {
       if (
         commitedTransaction.includes(transactionId) &&
-        !started.includes(transactionId)
+        checkpoint.includes(transactionId)
       ) {
         redoTransactionArray.push(transactionId);
       }
